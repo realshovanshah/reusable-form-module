@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:clean_forms/models/network/cloud_storage_response.dart';
+import 'package:clean_bloc_forms/models/network/cloud_storage_response.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
 class CloudStorageService {

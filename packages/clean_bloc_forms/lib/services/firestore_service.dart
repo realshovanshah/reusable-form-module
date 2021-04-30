@@ -1,4 +1,4 @@
-import 'package:clean_forms/models/local/form_model.dart';
+import 'package:clean_bloc_forms/models/local/form_model.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FirestoreService {

@@ -1,15 +1,15 @@
 import 'dart:io';
 
-import 'package:clean_forms/bloc/form_bloc.dart';
-import 'package:clean_forms/constants/enums.dart';
-import 'package:clean_forms/locator.dart';
-import 'package:clean_forms/models/local/form_model.dart';
-import 'package:clean_forms/utils/file_selector.dart';
+import 'package:clean_bloc_forms/bloc/form_bloc.dart';
+import 'package:clean_bloc_forms/constants/enums.dart';
+import 'package:clean_bloc_forms/models/local/form_model.dart';
+import 'package:clean_bloc_forms/utils/file_selector.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_form_builder/flutter_form_builder.dart';
 
+import '../locator.dart';
 import 'loading_screen.dart';
 
 class FormScreen extends StatefulWidget {

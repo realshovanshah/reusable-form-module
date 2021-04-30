@@ -1,14 +1,13 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:math';
 
-import 'package:bloc/bloc.dart';
-import 'package:clean_forms/locator.dart';
-import 'package:clean_forms/models/local/form_model.dart';
-import 'package:clean_forms/services/cloud_storage_service.dart';
-import 'package:clean_forms/services/firestore_service.dart';
+import 'package:clean_bloc_forms/models/local/form_model.dart';
+import 'package:clean_bloc_forms/services/cloud_storage_service.dart';
+import 'package:clean_bloc_forms/services/firestore_service.dart';
 import 'package:equatable/equatable.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../locator.dart';
 
 part 'form_event.dart';
 part 'form_state.dart';
