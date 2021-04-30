@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "798507013967",
+    "project_id": "clean-forms",
+    "storage_bucket": "clean-forms.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:798507013967:android:83f0bd05eb005e8e5c573a",
+        "android_client_info": {
+          "package_name": "com.example.clean_forms"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "798507013967-meer0hqvte88cdb9vch4oggipkqkc6ni.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwlqHy2i9tdHpCj-fz9nyOocfea1nGZ8g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "798507013967-meer0hqvte88cdb9vch4oggipkqkc6ni.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
