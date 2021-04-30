@@ -1,13 +1,14 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 class FormModel {
-  const FormModel(
+  FormModel(
     this.id,
     this.fileUrl,
     this.screenType,
     this.formType,
     this.availableStatus,
-    this.createdAt,
     this.updatedAt,
   );
 
@@ -16,8 +17,8 @@ class FormModel {
   final int screenType;
   final int formType;
   final bool availableStatus;
-  final DateTime createdAt;
-  final DateTime updatedAt;
+  final Timestamp createdAt = Timestamp.now();
+  final Timestamp updatedAt;
 
   FormModel copyWith({
     String? id,
@@ -25,8 +26,8 @@ class FormModel {
     int? screenType,
     int? formType,
     bool? availableStatus,
-    DateTime? createdAt,
-    DateTime? updatedAt,
+    Timestamp? createdAt,
+    Timestamp? updatedAt,
   }) {
     return FormModel(
       id ?? this.id,
@@ -34,7 +35,6 @@ class FormModel {
       screenType ?? this.screenType,
       formType ?? this.formType,
       availableStatus ?? this.availableStatus,
-      createdAt ?? this.createdAt,
       updatedAt ?? this.updatedAt,
     );
   }
@@ -46,8 +46,8 @@ class FormModel {
       'screenType': screenType,
       'formType': formType,
       'availableStatus': availableStatus,
-      'createdAt': createdAt.millisecondsSinceEpoch,
-      'updatedAt': updatedAt.millisecondsSinceEpoch,
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
     };
   }
 
@@ -58,8 +58,7 @@ class FormModel {
       map['screenType'],
       map['formType'],
       map['availableStatus'],
-      DateTime.fromMillisecondsSinceEpoch(map['createdAt']),
-      DateTime.fromMillisecondsSinceEpoch(map['updatedAt']),
+      map['updatedAt'] ?? Timestamp.now(),
     );
   }
 
