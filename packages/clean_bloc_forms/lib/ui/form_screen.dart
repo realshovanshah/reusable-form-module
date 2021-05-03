@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:clean_bloc_forms/bloc/form_bloc.dart';
 import 'package:clean_bloc_forms/bloc/table_bloc.dart';
@@ -29,7 +30,7 @@ class FormScreen extends StatefulWidget {
 class _FormScreenState extends State<FormScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
 
-  var fileNotifier = ValueNotifier<File?>(null);
+  var fileNotifier = ValueNotifier<Uint8List?>(null);
   late Map<String, dynamic> formData;
   late final TableBloc _tableBloc;
 

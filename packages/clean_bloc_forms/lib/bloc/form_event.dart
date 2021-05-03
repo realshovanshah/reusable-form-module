@@ -22,7 +22,7 @@ class FormSubmittedEvent extends FormEvent {
 }
 
 class FormFileUploadedEvent extends FormEvent {
-  final File file;
+  final Uint8List file;
   final String fileName;
 
   FormFileUploadedEvent(this.file, this.fileName);

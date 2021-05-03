@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:clean_bloc_forms/models/local/form_model.dart';
 import 'package:clean_bloc_forms/services/cloud_storage_service.dart';
@@ -46,7 +47,7 @@ class FormBloc extends Bloc<FormEvent, CleanFormState> {
 
       try {
         final value = await _cloudStorageService.uploadFile(
-            file: event.file, title: event.fileName);
+            fileBytes: event.file, title: event.fileName);
         print("corona" + value.toString());
         yield FormFileUploadSuccessState(value!.fileUrl, value.fileName);
       } catch (e) {

@@ -39,6 +39,15 @@ class _DisplayScreenState extends State<DisplayScreen> {
             fontSize: 32,
           ),
         ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            "Tap on a form for more options.",
+            style: TextStyle(
+              color: Colors.black,
+            ),
+          ),
+        ),
         SizedBox(height: 40),
         Center(
           child: BlocBuilder<TableBloc, TableState>(
