@@ -5,8 +5,10 @@
   },
   "hosting": {
     "site": "cleanforms",
-    "public": "public",
+    "public": "build/web",
     "ignore": [
+      "/android/",
+      "/ios/",
       "firebase.json",
       "**/.*",
       "**/node_modules/**"
