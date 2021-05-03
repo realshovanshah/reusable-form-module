@@ -1,9 +1,11 @@
 import 'dart:io';
 
 import 'package:clean_bloc_forms/bloc/form_bloc.dart';
+import 'package:clean_bloc_forms/bloc/table_bloc.dart';
 import 'package:clean_bloc_forms/constants/enums.dart';
 import 'package:clean_bloc_forms/models/local/form_model.dart';
 import 'package:clean_bloc_forms/utils/file_selector.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,8 +15,13 @@ import '../locator.dart';
 import 'loading_screen.dart';
 
 class FormScreen extends StatefulWidget {
-  FormScreen({Key? key}) : super(key: key);
-
+  FormScreen({
+    Key? key,
+    required this.title,
+    required this.formModel,
+  }) : super(key: key);
+  final String title;
+  final FormModel? formModel;
   @override
   _FormScreenState createState() => _FormScreenState();
 }
@@ -24,36 +31,48 @@ class _FormScreenState extends State<FormScreen> {
 
   var fileNotifier = ValueNotifier<File?>(null);
   late Map<String, dynamic> formData;
+  late final TableBloc _tableBloc;
 
   @override
   Widget build(BuildContext context) {
     final _bloc = BlocProvider.of<FormBloc>(context);
+    _tableBloc = BlocProvider.of<TableBloc>(context);
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text(widget.title),
+      ),
       body: Center(
         child: BlocBuilder(
           bloc: _bloc,
           builder: (BuildContext context, state) {
             if (state is FormFileUploadSuccessState) {
               formData['fileUrl'] = state.fileUrl;
-              formData['id'] = state.fileName;
-              _bloc.add(FormSubmittedEvent(FormModel.fromMap(formData)));
-              return ProgressBarWidget();
+              formData['venue'] = state.fileName;
+              formData['updatedAt'] = Timestamp.now();
+              (widget.formModel == null)
+                  ? _bloc.add(FormSubmittedEvent(FormModel.fromMap(formData)))
+                  : _tableBloc.add(
+                      TableUpdatedEvent(formData, widget.formModel!.docId!));
+
+              // return ProgressBarWidget();
             }
             if (state is FormSubmitSuccessState) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Upload Complete!'),
-                    CupertinoButton(
-                        child: Text('Go Back'),
-                        onPressed: () {
-                          _bloc.add(FormReloadedEvent());
-                        }),
-                  ],
-                ),
-              );
+              print('eta xa, will pop ma');
+              return WillPopScope(
+                  onWillPop: _willPopCallback,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Upload Complete!'),
+                      CupertinoButton(
+                          child: Text('Go Back'),
+                          onPressed: () {
+                            _bloc.add(FormReloadedEvent());
+                            _tableBloc.add(TableRequestedEvent());
+                          }),
+                    ],
+                  ));
             }
             if (state is FormInitialState) {
               fileNotifier.value = null;
@@ -76,7 +95,8 @@ class _FormScreenState extends State<FormScreen> {
                         ),
                         SizedBox(height: 20),
                         FormBuilderTextField(
-                          name: 'fileName',
+                          name: 'venue',
+                          initialValue: widget.formModel?.venue ?? '',
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.all(
@@ -94,6 +114,7 @@ class _FormScreenState extends State<FormScreen> {
                         ),
                         SizedBox(height: 20),
                         FormBuilderDropdown(
+                          initialValue: widget.formModel?.screenType ?? null,
                           name: 'screenType',
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
@@ -117,6 +138,7 @@ class _FormScreenState extends State<FormScreen> {
                         ),
                         SizedBox(height: 20),
                         FormBuilderDropdown(
+                          initialValue: widget.formModel?.formType ?? null,
                           name: 'formType',
                           decoration: InputDecoration(
                             border: OutlineInputBorder(
@@ -138,6 +160,8 @@ class _FormScreenState extends State<FormScreen> {
                               .toList(),
                         ),
                         FormBuilderChoiceChip(
+                          initialValue:
+                              widget.formModel?.availableStatus ?? null,
                           name: 'availableStatus',
                           decoration: InputDecoration(
                             border: InputBorder.none,
@@ -214,6 +238,14 @@ class _FormScreenState extends State<FormScreen> {
                                 onPressed: () {
                                   fileNotifier.value = null;
                                   _formKey.currentState?.reset();
+                                  if (widget.formModel != null) {
+                                    ScaffoldMessenger.of(context)
+                                        .hideCurrentSnackBar();
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                'This is the initial data of your form.')));
+                                  }
                                 },
                               ),
                             ),
@@ -234,13 +266,18 @@ class _FormScreenState extends State<FormScreen> {
                                     _bloc.add(
                                       FormFileUploadedEvent(
                                         fileNotifier.value!,
-                                        formData['fileName'],
+                                        formData['venue'],
                                       ),
                                     );
                                   } else {
-                                    currentState.fields['fileUrl']
-                                        ?.decoration();
-                                    print("validation failed");
+                                    print(currentState.value);
+                                    (!currentState.fields['fileUrl']!
+                                            .validate())
+                                        ? ScaffoldMessenger.of(context)
+                                            .showSnackBar(SnackBar(
+                                                content:
+                                                    Text('Select a file!')))
+                                        : print("validation success");
                                   }
                                 },
                               ),
@@ -253,11 +290,39 @@ class _FormScreenState extends State<FormScreen> {
                 ),
               );
             } else {
-              return ProgressBarWidget();
+              return Builder(builder: (context) {
+                print('eta xa, tala ko builder ma');
+
+                return (context.watch<TableBloc>().state
+                            is TableLoadingState) ||
+                        (context.watch<FormBloc>().state
+                            is FormSubmitLoadingState)
+                    ? ProgressBarWidget()
+                    : Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('Upload Complete!'),
+                            CupertinoButton(
+                                child: Text('Go Back'),
+                                onPressed: () {
+                                  _bloc.add(FormReloadedEvent());
+                                  _tableBloc.add(TableRequestedEvent());
+                                  Navigator.of(context).pop();
+                                }),
+                          ],
+                        ),
+                      );
+              });
             }
           },
         ),
       ),
     );
+  }
+
+  Future<bool> _willPopCallback() async {
+    _tableBloc.add(TableRequestedEvent());
+    return true;
   }
 }
