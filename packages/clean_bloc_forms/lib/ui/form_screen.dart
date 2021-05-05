@@ -30,7 +30,7 @@ class FormScreen extends StatefulWidget {
 class _FormScreenState extends State<FormScreen> {
   final _formKey = GlobalKey<FormBuilderState>();
 
-  var fileNotifier = ValueNotifier<Uint8List?>(null);
+  var fileNotifier = ValueNotifier<FileModel?>(null);
   late Map<String, dynamic> formData;
   late final TableBloc _tableBloc;
 
@@ -53,12 +53,15 @@ class _FormScreenState extends State<FormScreen> {
             builder: (BuildContext context, state) {
               if (state is FormFileUploadSuccessState) {
                 formData['fileUrl'] = state.fileUrl;
-                formData['venue'] = state.fileName;
+                formData['title'] = state.fileName;
                 formData['updatedAt'] = Timestamp.now();
+                print(formData);
+                print(FormModel.fromMap(formData));
                 (widget.formModel == null)
                     ? _bloc.add(FormSubmittedEvent(FormModel.fromMap(formData)))
                     : _tableBloc.add(
                         TableUpdatedEvent(formData, widget.formModel!.docId!));
+                // print(formData);
 
                 // return ProgressBarWidget();
               }
@@ -100,15 +103,15 @@ class _FormScreenState extends State<FormScreen> {
                           ),
                           SizedBox(height: 20),
                           FormBuilderTextField(
-                            name: 'venue',
-                            initialValue: widget.formModel?.venue ?? '',
+                            name: 'title',
+                            initialValue: widget.formModel?.title ?? '',
                             decoration: InputDecoration(
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(10),
                                 ),
                               ),
-                              labelText: 'Venue',
+                              labelText: 'Title',
                             ),
                             // onChanged: (value) {},
                             validator: FormBuilderValidators.compose([
@@ -143,21 +146,21 @@ class _FormScreenState extends State<FormScreen> {
                           ),
                           SizedBox(height: 20),
                           FormBuilderDropdown(
-                            initialValue: widget.formModel?.formType ?? null,
-                            name: 'formType',
+                            initialValue: widget.formModel?.category ?? null,
+                            name: 'category',
                             decoration: InputDecoration(
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.all(
                                   Radius.circular(10),
                                 ),
                               ),
-                              labelText: 'Form Type',
+                              labelText: 'Category',
                             ),
                             allowClear: true,
-                            hint: Text('Form Type'),
+                            hint: Text('Category'),
                             validator: FormBuilderValidators.compose(
                                 [FormBuilderValidators.required(context)]),
-                            items: (FormType.values)
+                            items: (CategoryType.values)
                                 .map((formOption) => DropdownMenuItem(
                                       value: formOption.index,
                                       child:
@@ -166,21 +169,22 @@ class _FormScreenState extends State<FormScreen> {
                                 .toList(),
                           ),
                           FormBuilderChoiceChip(
-                            initialValue:
-                                widget.formModel?.availableStatus ?? null,
-                            name: 'availableStatus',
+                            initialValue: widget.formModel?.status ?? null,
+                            name: 'status',
                             decoration: InputDecoration(
                               border: InputBorder.none,
-                              labelText: 'Booking Status',
+                              labelText: 'Status',
                             ),
                             options: [
                               FormBuilderFieldOption(
                                 value: false,
-                                child: Text('Booked'),
+                                child: Text('True'),
                               ),
                               FormBuilderFieldOption(
                                 value: true,
-                                child: Text('Available'),
+                                child: Container(
+                                  child: Text('False'),
+                                ),
                               ),
                             ],
                             spacing: 8,
@@ -190,6 +194,7 @@ class _FormScreenState extends State<FormScreen> {
                             validator: FormBuilderValidators.compose(
                                 [FormBuilderValidators.required(context)]),
                             name: 'fileUrl',
+                            initialValue: widget.formModel?.title ?? null,
                             builder: (FormFieldState<dynamic> field) {
                               return InputDecorator(
                                 decoration: InputDecoration(
@@ -200,7 +205,7 @@ class _FormScreenState extends State<FormScreen> {
                                   ),
                                   labelText: 'File',
                                 ),
-                                child: InkWell(
+                                child: GestureDetector(
                                   onTap: () async {
                                     fileNotifier.value =
                                         await serviceLocator<FileSelector>()
@@ -213,6 +218,13 @@ class _FormScreenState extends State<FormScreen> {
                                     child: ValueListenableBuilder(
                                         valueListenable: fileNotifier,
                                         builder: (context, value, child) {
+                                          var file = _formKey.currentState
+                                              ?.fields.values.first.value;
+                                          print('ahahhaha' + file.toString());
+                                          if (file != '') {
+                                            fileNotifier.value =
+                                                FileModel(Uint8List(0), file);
+                                          }
                                           return Center(
                                             child: (fileNotifier.value == null)
                                                 ? Text(
@@ -221,8 +233,23 @@ class _FormScreenState extends State<FormScreen> {
                                                     padding:
                                                         const EdgeInsets.all(
                                                             8.0),
-                                                    child: CircleAvatar(
-                                                      child: Icon(Icons.check),
+                                                    child: Row(
+                                                      mainAxisAlignment:
+                                                          MainAxisAlignment
+                                                              .center,
+                                                      children: [
+                                                        Text(fileNotifier
+                                                            .value!.title),
+                                                        IconButton(
+                                                          icon: Icon(
+                                                            Icons.close,
+                                                          ),
+                                                          onPressed: () {
+                                                            fileNotifier.value =
+                                                                null;
+                                                          },
+                                                        )
+                                                      ],
                                                     ),
                                                   ),
                                           );
@@ -272,8 +299,8 @@ class _FormScreenState extends State<FormScreen> {
                                       print(currentState.value);
                                       _bloc.add(
                                         FormFileUploadedEvent(
-                                          fileNotifier.value!,
-                                          formData['venue'],
+                                          fileNotifier.value!.byteData,
+                                          fileNotifier.value!.title,
                                         ),
                                       );
                                     } else {

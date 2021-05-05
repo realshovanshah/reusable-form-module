@@ -117,11 +117,11 @@ class _DisplayScreenState extends State<DisplayScreen> {
   List<DataRow> _buildTableRow(List<FormModel> forms, context) =>
       forms.map((FormModel formModel) {
         final cells = [
-          formModel.venue,
+          formModel.title,
           formModel.fileUrl.substring(69, 80),
-          (formModel.availableStatus) ? 'Available' : 'Booked',
+          (formModel.status) ? 'Available' : 'Booked',
           ScreenType.values[formModel.screenType].getEnumValue(),
-          FormType.values[formModel.formType].getEnumValue(),
+          CategoryType.values[formModel.category].getEnumValue(),
           formModel.createdAt.toDate(),
           formModel.updatedAt.toDate()
         ];
@@ -174,7 +174,7 @@ class _DisplayScreenState extends State<DisplayScreen> {
                           title: Text('Remove'),
                           onTap: () {
                             _bloc.add(TableDeletedEvent(
-                                formModel.docId!, formModel.venue));
+                                formModel.docId!, formModel.title));
                             // _bloc.add(TableRq());
                             Navigator.pop(context);
                           },

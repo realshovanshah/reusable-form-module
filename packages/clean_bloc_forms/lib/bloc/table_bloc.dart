@@ -35,9 +35,10 @@ class TableBloc extends Bloc<TableEvent, TableState> {
   }
 
   Stream<TableState> _mapTableUpdatedToState(TableUpdatedEvent event) async* {
-    print(event.formModel);
+    // print(event.formModel);
     try {
       yield TableLoadingState();
+      print("testistest");
       await _firestoreService.updateForm(
           formModel: event.formModel, docId: event.docId);
       yield TableLoadingSuccessState(forms: await _firestoreService.getForms());

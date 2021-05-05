@@ -33,6 +33,7 @@ class FormBloc extends Bloc<FormEvent, CleanFormState> {
       yield FormInitialState();
     }
     if (event is FormSubmittedEvent) {
+      print('testtest');
       try {
         yield FormSubmitLoadingState();
         await _firestoreService.addForm(formModel: event.formModel);

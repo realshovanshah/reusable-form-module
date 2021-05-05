@@ -1,5 +1,5 @@
 enum ScreenType { Venue, Customer }
-enum FormType { A, B }
+enum CategoryType { A, B }
 
 extension GetScreenValue on ScreenType {
   String getEnumValue() {
@@ -7,7 +7,7 @@ extension GetScreenValue on ScreenType {
   }
 }
 
-extension GetFormValue on FormType {
+extension GetFormValue on CategoryType {
   String getEnumValue() {
     return this.toString().split('.').last;
   }

@@ -3,34 +3,34 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 class FormModel {
-  FormModel(this.venue, this.fileUrl, this.screenType, this.formType,
-      this.availableStatus, this.updatedAt, this.docId);
+  FormModel(this.title, this.fileUrl, this.screenType, this.category,
+      this.status, this.updatedAt, this.docId);
 
   String? docId = "";
-  final String venue;
+  final String title;
   final String fileUrl;
   final int screenType;
-  final int formType;
-  final bool availableStatus;
+  final int category;
+  final bool status;
   final Timestamp createdAt = Timestamp.now();
   final Timestamp updatedAt;
 
   FormModel copyWith({
     String? docId,
-    String? venue,
+    String? title,
     String? fileUrl,
     int? screenType,
-    int? formType,
-    bool? availableStatus,
+    int? category,
+    bool? status,
     Timestamp? createdAt,
     Timestamp? updatedAt,
   }) {
     return FormModel(
-      venue ?? this.venue,
+      title ?? this.title,
       fileUrl ?? this.fileUrl,
       screenType ?? this.screenType,
-      formType ?? this.formType,
-      availableStatus ?? this.availableStatus,
+      category ?? this.category,
+      status ?? this.status,
       updatedAt ?? this.updatedAt,
       docId ?? this.docId,
     );
@@ -38,11 +38,11 @@ class FormModel {
 
   Map<String, dynamic> toMap() {
     return {
-      'venue': venue,
+      'title': title,
       'fileUrl': fileUrl,
       'screenType': screenType,
-      'formType': formType,
-      'availableStatus': availableStatus,
+      'category': category,
+      'status': status,
       'createdAt': createdAt,
       'updatedAt': updatedAt,
     };
@@ -50,11 +50,11 @@ class FormModel {
 
   factory FormModel.fromMap(Map<String, dynamic> map) {
     return FormModel(
-        map['venue'],
+        map['title'],
         map['fileUrl'],
         map['screenType'],
-        map['formType'],
-        map['availableStatus'],
+        map['category'],
+        map['status'],
         map['updatedAt'] ?? Timestamp.now(),
         "");
   }
@@ -66,11 +66,11 @@ class FormModel {
 
   static FormModel fromSnapshot(DocumentSnapshot snap, String docId) {
     return FormModel(
-      snap.data()?['venue'],
+      snap.data()?['title'],
       snap.data()?['fileUrl'],
       snap.data()?['screenType'],
-      snap.data()?['formType'],
-      snap.data()?['availableStatus'],
+      snap.data()?['category'],
+      snap.data()?['status'],
       snap.data()?['updatedAt'] ?? Timestamp.now(),
       docId,
     );
@@ -78,7 +78,7 @@ class FormModel {
 
   @override
   String toString() {
-    return 'FormModel(venue: $venue, fileUrl: $fileUrl, screenType: $screenType, formType: $formType, availableStatus: $availableStatus, createdAt: $createdAt, updatedAt: $updatedAt)';
+    return 'FormModel(title: $title, fileUrl: $fileUrl, screenType: $screenType, category: $category, status: $status, createdAt: $createdAt, updatedAt: $updatedAt)';
   }
 
   @override
@@ -86,22 +86,22 @@ class FormModel {
     if (identical(this, other)) return true;
 
     return other is FormModel &&
-        other.venue == venue &&
+        other.title == title &&
         other.fileUrl == fileUrl &&
         other.screenType == screenType &&
-        other.formType == formType &&
-        other.availableStatus == availableStatus &&
+        other.category == category &&
+        other.status == status &&
         other.createdAt == createdAt &&
         other.updatedAt == updatedAt;
   }
 
   @override
   int get hashCode {
-    return venue.hashCode ^
+    return title.hashCode ^
         fileUrl.hashCode ^
         screenType.hashCode ^
-        formType.hashCode ^
-        availableStatus.hashCode ^
+        category.hashCode ^
+        status.hashCode ^
         createdAt.hashCode ^
         updatedAt.hashCode;
   }
